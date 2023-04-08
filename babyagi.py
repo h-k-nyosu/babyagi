@@ -107,7 +107,7 @@ def openai_call(prompt: str, model: str = OPENAI_API_MODEL, temperature: float =
         return response.choices[0].message.content.strip()
 
 def task_creation_agent(objective: str, result: Dict, task_description: str, task_list: List[str]):
-    prompt = f"You are an task creation AI that uses the result of an execution agent to create new tasks with the following objective: {objective}, The last completed task has the result: {result}. This result was based on this task description: {task_description}. These are incomplete tasks: {', '.join(task_list)}. Based on the result, create new tasks to be completed by the AI system that do not overlap with incomplete tasks. Return the tasks as an array."
+    prompt = f"You are an task creation AI that uses the result of an execution agent to create new tasks with the following objective: {objective}, The last completed task has the result: {result}. This result was based on this task description: {task_description}. These are incomplete tasks: {', '.join(task_list)}. Based on the result, create new tasks to be completed by the AI system that do not overlap with incomplete tasks. Return the tasks as an array.lang:jp"
     response = openai_call(prompt)
     new_tasks = response.split('\n')
     return [{"task_name": task_name} for task_name in new_tasks]
@@ -116,7 +116,7 @@ def prioritization_agent(this_task_id: int):
     global task_list
     task_names = [t["task_name"] for t in task_list]
     next_task_id = int(this_task_id)+1
-    prompt = f"""You are an task prioritization AI tasked with cleaning the formatting of and reprioritizing the following tasks: {task_names}. Consider the ultimate objective of your team:{OBJECTIVE}. Do not remove any tasks. Return the result as a numbered list, like:
+    prompt = f"""You are an task prioritization AI tasked with cleaning the formatting of and reprioritizing the following tasks: {task_names}. Consider the ultimate objective of your team:{OBJECTIVE}. Do not remove any tasks. Return the result as a numbered list, lang:jp, like:
     #. First task
     #. Second task
     Start the task list with number {next_task_id}."""
@@ -134,7 +134,7 @@ def execution_agent(objective: str, task: str) -> str:
     context=context_agent(query=objective, n=5)
     #print("\n*******RELEVANT CONTEXT******\n")
     #print(context)
-    prompt =f"You are an AI who performs one task based on the following objective: {objective}.\nTake into account these previously completed tasks: {context}\nYour task: {task}\nResponse:"
+    prompt =f"You are an AI who performs one task based on the following objective: {objective}.\nTake into account these previously completed tasks: {context}\nYour task: {task}\n lang:jp, Response:"
     return openai_call(prompt, temperature=0.7, max_tokens=2000)
 
 def context_agent(query: str, n: int):
